@@ -2,11 +2,16 @@ package com.vt.chatbox;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +25,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.vt.chatbox.Model.MapModel;
 
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
@@ -29,6 +37,10 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 	GoogleMap googleMap;
 	Marker marker;
 	double lat, lon;
+	DatabaseReference databaseReference;
+	FirebaseDatabase firebaseDatabase;
+	ImageView sendLocation;
+	String latitude, longitude, userLocation;
 
 
 	@Override
@@ -36,11 +48,21 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_location);
+
+		sendLocation = findViewById(R.id.send_location);
+
+		firebaseDatabase = FirebaseDatabase.getInstance();
+		databaseReference = firebaseDatabase.getReference();
+
 		mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment);
 
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager
+				.PERMISSION_GRANTED && ActivityCompat
+				.checkSelfPermission
+						(this, Manifest.permission
+								.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
 			return;
 		}
@@ -51,6 +73,26 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 		lon = location.getLongitude();
 
 //		 latLng =new LatLng(location1.getLatitude(),location1.getLonitude());
+
+		latitude = "" + lat;
+		longitude = "" + lon;
+
+		sendLocation.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+
+				Intent it = getIntent();
+				userLocation = it.getStringExtra("location");
+
+				databaseReference.push();
+
+				MapModel mapModel = new MapModel(latitude, longitude);
+				databaseReference.child("Location").child(userLocation).setValue(mapModel);
+				Log.d(getClass().getSimpleName(), "location");
+				Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
+			}
+		});
+
 
 		mapFragment.getMapAsync(this);
 

@@ -93,7 +93,10 @@ public class ChatActivity extends AppCompatActivity {
 		findViewById(R.id.location).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				startActivity(new Intent(ChatActivity.this, LocationActivity.class));
+				Intent intent = new Intent(ChatActivity.this, LocationActivity.class);
+				intent.putExtra("location", recievername);
+				startActivity(intent);
+
 			}
 		});
 
