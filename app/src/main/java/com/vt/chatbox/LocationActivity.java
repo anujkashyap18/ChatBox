@@ -27,7 +27,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.vt.chatbox.Model.MapModel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
@@ -40,7 +42,8 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 	DatabaseReference databaseReference;
 	FirebaseDatabase firebaseDatabase;
 	ImageView sendLocation;
-	String latitude, longitude, userLocation;
+	String latitude, longitude, recieverLocation, currentUser;
+	String trackLocation;
 
 
 	@Override
@@ -52,7 +55,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 		sendLocation = findViewById(R.id.send_location);
 
 		firebaseDatabase = FirebaseDatabase.getInstance();
-		databaseReference = firebaseDatabase.getReference();
+		databaseReference = firebaseDatabase.getReference("chatdatabase");
 
 		mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment);
 
@@ -77,19 +80,36 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 		latitude = "" + lat;
 		longitude = "" + lon;
 
+
+		trackLocation = latitude + ":" + longitude;
+
 		sendLocation.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 
 				Intent it = getIntent();
-				userLocation = it.getStringExtra("location");
+				recieverLocation = it.getStringExtra("location");
+				currentUser = it.getStringExtra("currentUser");
 
-				databaseReference.push();
 
-				MapModel mapModel = new MapModel(latitude, longitude);
-				databaseReference.child("Location").child(userLocation).setValue(mapModel);
+				String id = databaseReference.push().getKey();
+				long t = System.currentTimeMillis();
+				Map<String, String> hm = new HashMap<>();
+
+				hm.put("message", trackLocation);
+				hm.put("sender", currentUser);
+				hm.put("time", String.valueOf(t));
+				hm.put("type", "userLocation");
+				hm.put("reciever", recieverLocation);
+
+				databaseReference.child(currentUser).child(currentUser + "-chat-" + recieverLocation).child(id).setValue(hm);
+				databaseReference.child(recieverLocation).child(recieverLocation + "-chat-" + currentUser).child(id).setValue(hm);
+
+////				MapModel mapModel = new MapModel(latitude, longitude);
+//				databaseReference.child("chatdatabase").child(recieverLocation).setValue(hm);
 				Log.d(getClass().getSimpleName(), "location");
 				Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
+				finish();
 			}
 		});
 

@@ -95,6 +95,7 @@ public class ChatActivity extends AppCompatActivity {
 			public void onClick(View view) {
 				Intent intent = new Intent(ChatActivity.this, LocationActivity.class);
 				intent.putExtra("location", recievername);
+				intent.putExtra("currentUser", cur_name);
 				startActivity(intent);
 
 			}
@@ -103,6 +104,7 @@ public class ChatActivity extends AppCompatActivity {
 		groupRecyclerView = findViewById(R.id.group_chat_recyclerview);
 
 		myFirebaseMessagingService = new MyFirebaseMessagingService();
+
 
 		Intent it = getIntent();
 		recievername = it.getStringExtra("name");
@@ -228,6 +230,7 @@ public class ChatActivity extends AppCompatActivity {
 					hm.put("message", message);
 					hm.put("sender", cur_name);
 					hm.put("time", String.valueOf(t));
+					hm.put("type", "text");
 					if (revieverimg.equals("group")) {
 
 						hm.put("reciever", "group");
@@ -267,7 +270,8 @@ public class ChatActivity extends AppCompatActivity {
 							dataSnapshot.child("message").getValue().toString(),
 							dataSnapshot.child("sender").getValue().toString(),
 							dataSnapshot.child("reciever").getValue().toString(),
-							dataSnapshot.child("time").getValue().toString()));
+							dataSnapshot.child("time").getValue().toString(),
+							dataSnapshot.child("type").getValue().toString()));
 
 					if (!cur_name.equals(dataSnapshot.child("sender").getValue().toString())) {
 						groupUsers.add(dataSnapshot.child("sender").getValue().toString());
@@ -279,9 +283,7 @@ public class ChatActivity extends AppCompatActivity {
 
 					re_name = dataSnapshot.child("sender").getValue().toString();
 					message = dataSnapshot.child("message").getValue().toString();
-
 				}
-
 				//if (groupUsers.size()>0) {
 				Log.d(getClass().getSimpleName(), "USERS : " + groupUsers.size());
 //				Toast.makeText(ChatActivity.this, "USERS : " + groupUsers, Toast.LENGTH_SHORT).show();
