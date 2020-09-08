@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "299369944595",
+    "firebase_url": "https://chatbox-5076d.firebaseio.com",
+    "project_id": "chatbox-5076d",
+    "storage_bucket": "chatbox-5076d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299369944595:android:d596f09448c18b554651e6",
+        "android_client_info": {
+          "package_name": "com.vt.chatbox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299369944595-f33jv4g6ascu95v9d913sqhc1g2jdmqu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXT7fG-yekfRow5q712Iv1h789x16uT4Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299369944595-f33jv4g6ascu95v9d913sqhc1g2jdmqu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

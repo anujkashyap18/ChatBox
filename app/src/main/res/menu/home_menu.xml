@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--      <item-->
+    <!--          android:id="@+id/Edit_info"-->
+    <!--          android:title="Edit Info" />-->
+
+    <!--      <item-->
+    <!--          android:id="@+id/Edit_password"-->
+    <!--          android:title="Change Password" />-->
+
+    <item
+        android:id="@+id/profile"
+        android:title="Profile" />
+
+          <item
+              android:id="@+id/showall"
+              android:title="Create Group" />
+
+    <item
+        android:id="@+id/log_out"
+        android:title="Logout" />
+
+</menu>
