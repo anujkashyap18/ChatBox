@@ -41,9 +41,9 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 	double lat, lon;
 	DatabaseReference databaseReference;
 	FirebaseDatabase firebaseDatabase;
-	ImageView sendLocation;
+	ImageView sendLocation, back;
 	String latitude, longitude, recieverLocation, currentUser;
-	String trackLocation;
+	String trackLocation, revieverimg;
 
 
 	@Override
@@ -53,6 +53,14 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 		setContentView(R.layout.activity_location);
 
 		sendLocation = findViewById(R.id.send_location);
+
+		back = findViewById(R.id.imageBack);
+		back.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				onBackPressed();
+			}
+		});
 
 		firebaseDatabase = FirebaseDatabase.getInstance();
 		databaseReference = firebaseDatabase.getReference("chatdatabase");
@@ -90,6 +98,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 				Intent it = getIntent();
 				recieverLocation = it.getStringExtra("location");
 				currentUser = it.getStringExtra("currentUser");
+				revieverimg = it.getStringExtra("recieverimg");
 
 
 				String id = databaseReference.push().getKey();
@@ -100,16 +109,26 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 				hm.put("sender", currentUser);
 				hm.put("time", String.valueOf(t));
 				hm.put("type", "userLocation");
-				hm.put("reciever", recieverLocation);
 
-				databaseReference.child(currentUser).child(currentUser + "-chat-" + recieverLocation).child(id).setValue(hm);
-				databaseReference.child(recieverLocation).child(recieverLocation + "-chat-" + currentUser).child(id).setValue(hm);
+				if (revieverimg.equals("group")) {
+
+					hm.put("reciever", "group");
+					databaseReference.child("group").child(recieverLocation + "-chat").child(id).setValue(hm);
+					Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
+					finish();
+				} else {
+
+					hm.put("reciever", recieverLocation);
+
+					databaseReference.child(currentUser).child(currentUser + "-chat-" + recieverLocation).child(id).setValue(hm);
+					databaseReference.child(recieverLocation).child(recieverLocation + "-chat-" + currentUser).child(id).setValue(hm);
 
 ////				MapModel mapModel = new MapModel(latitude, longitude);
 //				databaseReference.child("chatdatabase").child(recieverLocation).setValue(hm);
-				Log.d(getClass().getSimpleName(), "location");
-				Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
-				finish();
+					Log.d(getClass().getSimpleName(), "location");
+					Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
+					finish();
+				}
 			}
 		});
 
@@ -149,5 +168,10 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 	@Override
 	public void onProviderDisabled(@NonNull String provider) {
 
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
 	}
 }

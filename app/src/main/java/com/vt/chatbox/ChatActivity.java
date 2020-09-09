@@ -90,16 +90,7 @@ public class ChatActivity extends AppCompatActivity {
 		chatRecyclerView = findViewById(R.id.chat_recyclerview);
 		view = findViewById(R.id.profileClick);
 
-		findViewById(R.id.location).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Intent intent = new Intent(ChatActivity.this, LocationActivity.class);
-				intent.putExtra("location", recievername);
-				intent.putExtra("currentUser", cur_name);
-				startActivity(intent);
 
-			}
-		});
 
 		groupRecyclerView = findViewById(R.id.group_chat_recyclerview);
 
@@ -113,6 +104,20 @@ public class ChatActivity extends AppCompatActivity {
 		recieverEmail = it.getStringExtra("email");
 
 		Log.d(getClass().getSimpleName(), "TOKENS : " + tokens);
+
+		findViewById(R.id.location).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Intent intent = new Intent(ChatActivity.this, LocationActivity.class);
+				intent.putExtra("location", recievername);
+//				Toast.makeText(ChatActivity.this, "groups"+recievername, Toast.LENGTH_SHORT).show();
+				intent.putExtra("currentUser", cur_name);
+				intent.putExtra("recieverimg", revieverimg);
+
+				startActivity(intent);
+
+			}
+		});
 
 //		FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
 //

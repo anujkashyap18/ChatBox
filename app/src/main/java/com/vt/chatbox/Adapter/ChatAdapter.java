@@ -79,7 +79,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatHolder> {
 				holder.locationView.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
-						Uri uri = Uri.parse("google.navigation:q=" + lat + "," + lon + "maps");
+						Uri uri = Uri.parse("google.navigation:q=" + lat + "," + lon);
 						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 						intent.setPackage("com.google.android.apps.maps");
 						try {
