@@ -1,14 +1,21 @@
 package com.vt.chatbox;
 
-import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -27,12 +34,18 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.vt.chatbox.Service.LocationTrack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
+	private final static int ALL_PERMISSIONS_RESULT = 101;
 	SupportMapFragment mapFragment;
 	LocationManager locationManager;
 	Location location;
@@ -44,6 +57,10 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 	ImageView sendLocation, back;
 	String latitude, longitude, recieverLocation, currentUser;
 	String trackLocation, revieverimg;
+	ArrayList permissionsToRequest;
+	ArrayList permissionsRejected = new ArrayList();
+	ArrayList permissions = new ArrayList();
+	LocationTrack locationTrack;
 
 
 	@Override
@@ -65,15 +82,15 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 		firebaseDatabase = FirebaseDatabase.getInstance();
 		databaseReference = firebaseDatabase.getReference("chatdatabase");
 
+
 		mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment);
 
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager
+		if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager
 				.PERMISSION_GRANTED && ActivityCompat
 				.checkSelfPermission
-						(this, Manifest.permission
-								.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+						(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
 			return;
 		}
@@ -127,8 +144,16 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 //				databaseReference.child("chatdatabase").child(recieverLocation).setValue(hm);
 					Log.d(getClass().getSimpleName(), "location");
 					Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
+					Intent intent = new Intent(LocationActivity.this, LocationTrack.class);
+					intent.putExtra("reciever", recieverLocation);
+					intent.putExtra("sender", currentUser);
+					intent.putExtra("chatId", id);
+					startService(intent);
 					finish();
+
 				}
+
+
 			}
 		});
 
@@ -137,13 +162,43 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
 	}
 
+
+	public void takeScreenShot() {
+
+		// Get device dimmensions
+		Display display = getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+
+// Get root view
+		View views = getWindow().getDecorView().getRootView();
+
+// Create the bitmap to use to draw the screenshot
+		final Bitmap bitmap = Bitmap.createBitmap(size.x, size.y, Bitmap.Config.ARGB_4444);
+		final Canvas canvas = new Canvas(bitmap);
+
+// Get current theme to know which background to use
+		final Activity activity = this.getParent();
+		final Resources.Theme theme = activity.getTheme();
+		final TypedArray ta = theme.obtainStyledAttributes(new int[]{android.R.attr.windowBackground});
+		final int res = ta.getResourceId(0, 0);
+		final Drawable background = activity.getResources().getDrawable(res);
+
+// Draw background
+		background.draw(canvas);
+
+// Draw views
+		views.draw(canvas);
+	}
+
+
 	@Override
 	public void onMapReady(GoogleMap googleMap) {
 
 		this.googleMap = googleMap;
 		LatLng sydney = new LatLng(lat, lon);
 		marker = googleMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("My location"));
-		googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,12f));
+		googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12f));
 
 	}
 
@@ -152,7 +207,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 		lat = location.getLatitude();
 		lon = location.getLongitude();
 		marker.setPosition(new LatLng(lat, lon));
-		googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon),16f));
+		googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 16f));
 	}
 
 	@Override
