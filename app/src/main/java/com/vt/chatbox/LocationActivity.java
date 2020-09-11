@@ -1,21 +1,15 @@
 package com.vt.chatbox;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -32,11 +26,16 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.vt.chatbox.Service.LocationTrack;
 
-import java.util.ArrayList;
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,29 +44,31 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class LocationActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
-	private final static int ALL_PERMISSIONS_RESULT = 101;
 	SupportMapFragment mapFragment;
 	LocationManager locationManager;
 	Location location;
 	GoogleMap googleMap;
 	Marker marker;
 	double lat, lon;
-	DatabaseReference databaseReference;
-	FirebaseDatabase firebaseDatabase;
 	ImageView sendLocation, back;
 	String latitude, longitude, recieverLocation, currentUser;
 	String trackLocation, revieverimg;
-	ArrayList permissionsToRequest;
-	ArrayList permissionsRejected = new ArrayList();
-	ArrayList permissions = new ArrayList();
-	LocationTrack locationTrack;
-
+	FirebaseStorage sref;
+	StorageReference ref;
+	DatabaseReference databaseReference;
+	FirebaseDatabase firebaseDatabase;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_location);
+
+		firebaseDatabase = FirebaseDatabase.getInstance();
+		databaseReference = firebaseDatabase.getReference("chatdatabase");
+		sref = FirebaseStorage.getInstance();
+		ref = sref.getReference("location/" + recieverLocation + "/locationimg" + System.currentTimeMillis());
+
 
 		sendLocation = findViewById(R.id.send_location);
 
@@ -78,9 +79,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 				onBackPressed();
 			}
 		});
-
-		firebaseDatabase = FirebaseDatabase.getInstance();
-		databaseReference = firebaseDatabase.getReference("chatdatabase");
 
 
 		mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment);
@@ -112,85 +110,95 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 			@Override
 			public void onClick(View view) {
 
-				Intent it = getIntent();
-				recieverLocation = it.getStringExtra("location");
-				currentUser = it.getStringExtra("currentUser");
-				revieverimg = it.getStringExtra("recieverimg");
-
-
-				String id = databaseReference.push().getKey();
-				long t = System.currentTimeMillis();
-				Map<String, String> hm = new HashMap<>();
-
-				hm.put("message", trackLocation);
-				hm.put("sender", currentUser);
-				hm.put("time", String.valueOf(t));
-				hm.put("type", "userLocation");
-
-				if (revieverimg.equals("group")) {
-
-					hm.put("reciever", "group");
-					databaseReference.child("group").child(recieverLocation + "-chat").child(id).setValue(hm);
-					Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
-					finish();
-				} else {
-
-					hm.put("reciever", recieverLocation);
-
-					databaseReference.child(currentUser).child(currentUser + "-chat-" + recieverLocation).child(id).setValue(hm);
-					databaseReference.child(recieverLocation).child(recieverLocation + "-chat-" + currentUser).child(id).setValue(hm);
-
-////				MapModel mapModel = new MapModel(latitude, longitude);
-//				databaseReference.child("chatdatabase").child(recieverLocation).setValue(hm);
-					Log.d(getClass().getSimpleName(), "location");
-					Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
-					Intent intent = new Intent(LocationActivity.this, LocationTrack.class);
-					intent.putExtra("reciever", recieverLocation);
-					intent.putExtra("sender", currentUser);
-					intent.putExtra("chatId", id);
-					startService(intent);
-					finish();
-
-				}
-
-
+				takeScreenShot();
 			}
 		});
-
-
 		mapFragment.getMapAsync(this);
 
 	}
 
-
 	public void takeScreenShot() {
-
-		// Get device dimmensions
-		Display display = getWindowManager().getDefaultDisplay();
-		Point size = new Point();
-		display.getSize(size);
-
 // Get root view
-		View views = getWindow().getDecorView().getRootView();
+//		View views = getWindow().getDecorView().getRootView();
 
 // Create the bitmap to use to draw the screenshot
-		final Bitmap bitmap = Bitmap.createBitmap(size.x, size.y, Bitmap.Config.ARGB_4444);
-		final Canvas canvas = new Canvas(bitmap);
 
-// Get current theme to know which background to use
-		final Activity activity = this.getParent();
-		final Resources.Theme theme = activity.getTheme();
-		final TypedArray ta = theme.obtainStyledAttributes(new int[]{android.R.attr.windowBackground});
-		final int res = ta.getResourceId(0, 0);
-		final Drawable background = activity.getResources().getDrawable(res);
+		GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
+			@Override
+			public void onSnapshotReady(Bitmap bitmap) {
+				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+				bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+				byte[] bytes = byteArrayOutputStream.toByteArray();
 
-// Draw background
-		background.draw(canvas);
+				final UploadTask uploadTask = ref.putBytes(bytes);
+				uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+					@Override
+					public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-// Draw views
-		views.draw(canvas);
+						ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+							@Override
+							public void onSuccess(Uri uri) {
+								String url = String.valueOf(uri);
+
+//								Toast.makeText(LocationActivity.this, "Image Uploaded", Toast.LENGTH_SHORT).show();
+								Log.d("kjhdj", "jcb" + url);
+
+								Intent it = getIntent();
+								recieverLocation = it.getStringExtra("location");
+								currentUser = it.getStringExtra("currentUser");
+								revieverimg = it.getStringExtra("recieverimg");
+
+
+								String id = databaseReference.push().getKey();
+								long t = System.currentTimeMillis();
+								Map<String, String> hm = new HashMap<>();
+
+								hm.put("message", trackLocation);
+								hm.put("sender", currentUser);
+								hm.put("time", String.valueOf(t));
+								hm.put("type", "userLocation");
+								hm.put("images", url);
+
+								if (revieverimg.equals("group")) {
+
+									hm.put("reciever", "group");
+									databaseReference.child("group").child(recieverLocation + "-chat").child(id).setValue(hm);
+//			                Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
+									finish();
+								} else {
+
+									hm.put("reciever", recieverLocation);
+
+									databaseReference.child(currentUser).child(currentUser + "-chat-" + recieverLocation).child(id).setValue(hm);
+									databaseReference.child(recieverLocation).child(recieverLocation + "-chat-" + currentUser).child(id).setValue(hm);
+
+									Log.d(getClass().getSimpleName(), "location");
+									Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
+									Intent intent = new Intent(LocationActivity.this, LocationTrack.class);
+									intent.putExtra("reciever", recieverLocation);
+									intent.putExtra("sender", currentUser);
+									intent.putExtra("chatId", id);
+									startService(intent);
+									finish();
+								}
+							}
+						});
+
+					}
+				}).addOnFailureListener(new OnFailureListener() {
+					@Override
+					public void onFailure(@NonNull Exception e) {
+
+					}
+				});
+//				Toast.makeText(LocationActivity.this, "bitmap" + bitmap, Toast.LENGTH_SHORT).show();
+				Log.d(getClass().getSimpleName(), "showBitmap" + bitmap);
+			}
+		};
+
+		googleMap.snapshot(callback);
+
 	}
-
 
 	@Override
 	public void onMapReady(GoogleMap googleMap) {

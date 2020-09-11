@@ -99,14 +99,14 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="4dp"
             android:layout_weight="1"
-            android:background="@drawable/cardview">
+            android:background="@drawable/cardview"
+            android:paddingTop="16dp">
 
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/scroll"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -114,9 +114,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/chat_recyclerview"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingTop="20dp"
-                    android:paddingBottom="60dp"
+                    android:layout_height="wrap_content"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/custom_chat" />
 
@@ -174,6 +172,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

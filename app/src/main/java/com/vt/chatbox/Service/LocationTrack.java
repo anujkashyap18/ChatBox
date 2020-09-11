@@ -93,7 +93,7 @@ public class LocationTrack extends Service implements LocationListener {
 		} else {
 
 			canGetLocation = true;
-			Toast.makeText(LocationTrack.this, "checkNetwork" + canGetLocation, Toast.LENGTH_SHORT).show();
+//			Toast.makeText(LocationTrack.this, "checkNetwork" + canGetLocation, Toast.LENGTH_SHORT).show();
 
 			// if GPS Enabled get lat/long using GPS Services
 
@@ -147,7 +147,7 @@ public class LocationTrack extends Service implements LocationListener {
 				if (locationManager != null) {
 					loc = locationManager
 							.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-					Toast.makeText(LocationTrack.this, "lon" + loc, Toast.LENGTH_SHORT).show();
+//					Toast.makeText(LocationTrack.this, "lon" + loc, Toast.LENGTH_SHORT).show();
 
 				}
 

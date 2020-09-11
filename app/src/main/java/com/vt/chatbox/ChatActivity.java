@@ -32,6 +32,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.vt.chatbox.Adapter.ChatAdapter;
 import com.vt.chatbox.Adapter.GroupAdapter;
@@ -76,6 +78,8 @@ public class ChatActivity extends AppCompatActivity {
 	RecyclerView.LayoutManager groupLayoutManager;
 	View view;
 	Mention mentions;
+	FirebaseStorage sref;
+	StorageReference ref;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +93,6 @@ public class ChatActivity extends AppCompatActivity {
 		scrollView = findViewById(R.id.scroll);
 		chatRecyclerView = findViewById(R.id.chat_recyclerview);
 		view = findViewById(R.id.profileClick);
-
 
 
 		groupRecyclerView = findViewById(R.id.group_chat_recyclerview);
@@ -119,15 +122,6 @@ public class ChatActivity extends AppCompatActivity {
 			}
 		});
 
-//		FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
-//
-//		Job myJob = dispatcher.newJobBuilder()
-//				.setService(MyJobService.class)
-//				.setTag("my-unique-tag")
-//				.build();
-//
-//		dispatcher.mustSchedule(myJob);
-
 		FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
 			@Override
 			public void onSuccess(InstanceIdResult instanceIdResult) {
@@ -148,10 +142,10 @@ public class ChatActivity extends AppCompatActivity {
 		view.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Intent intent = new Intent(ChatActivity.this,UserProfileActivity.class);
-				intent.putExtra("name",recievername);
-				intent.putExtra("email",recieverEmail);
-				intent.putExtra("image",revieverimg);
+				Intent intent = new Intent(ChatActivity.this, UserProfileActivity.class);
+				intent.putExtra("name", recievername);
+				intent.putExtra("email", recieverEmail);
+				intent.putExtra("image", revieverimg);
 				startActivity(intent);
 			}
 		});
@@ -161,6 +155,10 @@ public class ChatActivity extends AppCompatActivity {
 
 		mauth = FirebaseAuth.getInstance();
 		r_db = FirebaseDatabase.getInstance().getReference("chatdatabase");
+
+		sref = FirebaseStorage.getInstance();
+		ref = sref.getReference("location/" + recievername + "/profileimg");
+
 
 		back = findViewById(R.id.imageBack);
 		back.setOnClickListener(new View.OnClickListener() {
@@ -236,6 +234,7 @@ public class ChatActivity extends AppCompatActivity {
 					hm.put("sender", cur_name);
 					hm.put("time", String.valueOf(t));
 					hm.put("type", "text");
+					hm.put("images", "null");
 					if (revieverimg.equals("group")) {
 
 						hm.put("reciever", "group");
@@ -276,7 +275,8 @@ public class ChatActivity extends AppCompatActivity {
 							dataSnapshot.child("sender").getValue().toString(),
 							dataSnapshot.child("reciever").getValue().toString(),
 							dataSnapshot.child("time").getValue().toString(),
-							dataSnapshot.child("type").getValue().toString()));
+							dataSnapshot.child("type").getValue().toString(),
+							dataSnapshot.child("images").getValue().toString()));
 
 					if (!cur_name.equals(dataSnapshot.child("sender").getValue().toString())) {
 						groupUsers.add(dataSnapshot.child("sender").getValue().toString());

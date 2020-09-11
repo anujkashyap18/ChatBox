@@ -1,5 +1,6 @@
 package com.vt.chatbox;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,7 +31,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 public class MainActivity extends AppCompatActivity {
+	private static final int RC_CAMERA_AND_LOCATION = 1;
 	TextInputEditText editTextPassword;
 	TextInputEditText editTextEmail;
 	MaterialButton buttonLogin;
@@ -40,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 	FirebaseDatabase firebaseDatabase;
 	DatabaseReference databaseReference;
 	ConstraintLayout layout;
+	String[] perm_params = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 		decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
 		setContentView(R.layout.activity_main);
+		methodRequiresTwoPermission();
 		SharedPreferences sp = getSharedPreferences("user", MODE_PRIVATE);
 		String nam = sp.getString("name", "");
 		if (!nam.equals("")) {
@@ -142,5 +149,26 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 		});
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		// Forward results to EasyPermissions
+		EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+	}
+
+	@AfterPermissionGranted(RC_CAMERA_AND_LOCATION)
+	private void methodRequiresTwoPermission() {
+		String[] perms = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION};
+		if (EasyPermissions.hasPermissions(this, perm_params)) {
+			// Already have permission, do the thing
+			// ...
+		} else {
+			// Do not have permissions, request them now
+			EasyPermissions.requestPermissions(this, getString(R.string.app_name),
+					RC_CAMERA_AND_LOCATION, perms);
+		}
 	}
 }

@@ -24,10 +24,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:id="@+id/recieverlayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:background="@drawable/chat_ui_left"
             android:backgroundTint="@color/colorSecondary"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,14 +40,33 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:fontFamily="sans-serif"
+                android:text="reciever"
                 android:textColor="@color/colorPrimaryDark"
-                android:textColorHint="@color/colorPrimaryDark"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textColorHint="@color/colorPrimaryDark" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/location_view1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/reciever_map_view"
+                    android:layout_width="200dp"
+                    android:layout_height="150dp"
+                    android:layout_margin="2dp"
+                    android:src="@drawable/ic_baseline_location_on_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/reciever_time"
@@ -87,44 +107,16 @@
                 android:visibility="gone">
 
                 <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
+                    android:id="@+id/map_view"
+                    android:layout_width="200dp"
                     android:layout_margin="2dp"
-                    android:src="@drawable/ic_baseline_location_on_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="1:1"
-                    app:layout_constraintEnd_toStartOf="@+id/linearLayout6"
+                    android:layout_height="150dp"
+                    android:src="@drawable/ic_baseline_location_on_24"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <LinearLayout
-                    android:id="@+id/linearLayout6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="2dp"
-                    android:weightSum="1"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/text_latitude"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.5"
-                        android:text="latitude"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="16dp" />
-
-                    <TextView
-                        android:id="@+id/text_longitude"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.5"
-                        android:text="latitude"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="16dp" />
-
-                </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
