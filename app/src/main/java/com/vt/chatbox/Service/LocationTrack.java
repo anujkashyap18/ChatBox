@@ -8,6 +8,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.widget.Toast;
 
@@ -30,10 +31,11 @@ public class LocationTrack extends Service implements LocationListener {
 	String sender, reciever, chatId, trackLocation;
 	DatabaseReference databaseReference;
 	FirebaseDatabase firebaseDatabase;
+	long duration;
 
 	public LocationTrack() {
-	}
 
+	}
 
 	@Override
 	public void onCreate() {
@@ -43,28 +45,13 @@ public class LocationTrack extends Service implements LocationListener {
 		firebaseDatabase = FirebaseDatabase.getInstance();
 		databaseReference = firebaseDatabase.getReference("chatdatabase");
 
-	}
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				onDestroy();
+			}
+		}, duration);
 
-	public double getLongitude() {
-		if (loc != null) {
-			longitude = loc.getLongitude();
-		}
-		return longitude;
-	}
-
-	public double getLatitude() {
-		if (loc != null) {
-			latitude = loc.getLatitude();
-		}
-		return latitude;
-	}
-
-	public void showSettingsAlert() {
-
-	}
-
-	public boolean canGetLocation() {
-		return this.canGetLocation;
 	}
 
 	@Override
@@ -82,20 +69,15 @@ public class LocationTrack extends Service implements LocationListener {
 
 		//get GPS status
 		checkGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-//		Toast.makeText(LocationTrack.this, "checkGPS" +checkGPS, Toast.LENGTH_SHORT).show();
 
-		// get network provider status
 		checkNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-//		Toast.makeText(LocationTrack.this, "checkNetwork" +checkNetwork, Toast.LENGTH_SHORT).show();
 
 		if (!checkGPS && !checkNetwork) {
 			Toast.makeText(LocationTrack.this, "No Service Provider is available", Toast.LENGTH_SHORT).show();
 		} else {
 
 			canGetLocation = true;
-//			Toast.makeText(LocationTrack.this, "checkNetwork" + canGetLocation, Toast.LENGTH_SHORT).show();
-
-			// if GPS Enabled get lat/long using GPS Services
+//
 
 			if (checkGPS) {
 
@@ -104,13 +86,6 @@ public class LocationTrack extends Service implements LocationListener {
 						.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
 						!= PackageManager.PERMISSION_GRANTED) {
 
-					// TODO: Consider calling
-					//    ActivityCompat#requestPermissions
-					// here to request the missing permissions, and then overriding
-					//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-					//                                          int[] grantResults)
-					// to handle the case where the user grants the permission. See the documentation
-					// for ActivityCompat#requestPermissions for more details.
 				}
 				locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
@@ -119,26 +94,12 @@ public class LocationTrack extends Service implements LocationListener {
 					loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 					if (loc != null) {
 						latitude = loc.getLatitude();
-//						Toast.makeText(LocationTrack.this, "lat" +latitude, Toast.LENGTH_SHORT).show();
 						longitude = loc.getLongitude();
-//						Toast.makeText(LocationTrack.this, "lon" +longitude, Toast.LENGTH_SHORT).show();
 					}
 				}
-//				Toast.makeText(LocationTrack.this, "checkgps" +checkGPS, Toast.LENGTH_SHORT).show();
 			}
 
 			if (checkNetwork) {
-
-//
-//                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                        // TODO: Consider calling
-//                        //    ActivityCompat#requestPermissions
-//                        // here to request the missing permissions, and then overriding
-//                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                        //                                          int[] grantResults)
-//                        // to handle the case where the user grants the permission. See the documentation
-//                        // for ActivityCompat#requestPermissions for more details.
-//                    }
 				locationManager.requestLocationUpdates(
 						LocationManager.NETWORK_PROVIDER,
 						MIN_TIME_BW_UPDATES,
@@ -147,7 +108,6 @@ public class LocationTrack extends Service implements LocationListener {
 				if (locationManager != null) {
 					loc = locationManager
 							.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//					Toast.makeText(LocationTrack.this, "lon" + loc, Toast.LENGTH_SHORT).show();
 
 				}
 
@@ -158,8 +118,6 @@ public class LocationTrack extends Service implements LocationListener {
 			}
 
 		}
-
-//		Toast.makeText(LocationTrack.this, "ff", Toast.LENGTH_SHORT).show();
 		return START_STICKY;
 	}
 

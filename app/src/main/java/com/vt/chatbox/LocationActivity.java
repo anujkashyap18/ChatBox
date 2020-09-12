@@ -1,6 +1,7 @@
 package com.vt.chatbox;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -12,10 +13,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -28,6 +32,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -50,13 +55,18 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 	GoogleMap googleMap;
 	Marker marker;
 	double lat, lon;
-	ImageView sendLocation, back;
+	ImageView back, locationBack;
 	String latitude, longitude, recieverLocation, currentUser;
 	String trackLocation, revieverimg;
 	FirebaseStorage sref;
 	StorageReference ref;
 	DatabaseReference databaseReference;
 	FirebaseDatabase firebaseDatabase;
+	ProgressBar progressBar;
+	ConstraintLayout shareLocation, currentLocation;
+	LinearLayout locationTime, locationLive;
+	MaterialButton min15, hour1, hour3;
+	LocationTrack locationTrack;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,7 +80,50 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 		ref = sref.getReference("location/" + recieverLocation + "/locationimg" + System.currentTimeMillis());
 
 
-		sendLocation = findViewById(R.id.send_location);
+		progressBar = findViewById(R.id.progress);
+		shareLocation = findViewById(R.id.con_share);
+		locationTime = findViewById(R.id.location_time);
+		locationLive = findViewById(R.id.location_live);
+		locationBack = findViewById(R.id.location_back);
+		currentLocation = findViewById(R.id.currentLocation);
+		min15 = findViewById(R.id.min15);
+		hour1 = findViewById(R.id.hour1);
+		hour3 = findViewById(R.id.hour8);
+
+
+		min15.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+
+				takeScreenShot();
+				progressBar.setVisibility(View.VISIBLE);
+			}
+		});
+
+		hour1.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				takeScreenShot();
+				progressBar.setVisibility(View.VISIBLE);
+			}
+		});
+
+		hour3.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				takeScreenShot();
+				progressBar.setVisibility(View.VISIBLE);
+			}
+		});
+
+
+		locationBack.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				locationTime.setVisibility(View.GONE);
+				locationLive.setVisibility(View.VISIBLE);
+			}
+		});
 
 		back = findViewById(R.id.imageBack);
 		back.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +138,26 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("location not found")  // GPS not found
+					.setMessage("Please enable location") // Want to enable?
+					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialogInterface, int i) {
+							startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+						}
+					})
+					.setNegativeButton("no", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							onBackPressed();
+						}
+					});
+
+			AlertDialog alertDialog = builder.create();
+			alertDialog.show();
+		}
+
 		if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager
 				.PERMISSION_GRANTED && ActivityCompat
 				.checkSelfPermission
@@ -98,30 +171,39 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 		lat = location.getLatitude();
 		lon = location.getLongitude();
 
-//		 latLng =new LatLng(location1.getLatitude(),location1.getLonitude());
-
 		latitude = "" + lat;
 		longitude = "" + lon;
 
-
 		trackLocation = latitude + ":" + longitude;
 
-		sendLocation.setOnClickListener(new View.OnClickListener() {
+		locationLive.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-
-				takeScreenShot();
+				locationLive.setVisibility(View.GONE);
+				locationTime.setVisibility(View.VISIBLE);
 			}
 		});
+
+		currentLocation.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				takeScreenShot();
+				progressBar.setVisibility(View.VISIBLE);
+			}
+		});
+
 		mapFragment.getMapAsync(this);
 
 	}
 
 	public void takeScreenShot() {
-// Get root view
-//		View views = getWindow().getDecorView().getRootView();
 
-// Create the bitmap to use to draw the screenshot
+//		try {
+//			locationTrack = new LocationTrack(dur);
+//		}
+//		catch(Exception e){
+//			e.printStackTrace();
+//		}
 
 		GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
 			@Override
@@ -140,14 +222,10 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 							public void onSuccess(Uri uri) {
 								String url = String.valueOf(uri);
 
-//								Toast.makeText(LocationActivity.this, "Image Uploaded", Toast.LENGTH_SHORT).show();
-								Log.d("kjhdj", "jcb" + url);
-
 								Intent it = getIntent();
 								recieverLocation = it.getStringExtra("location");
 								currentUser = it.getStringExtra("currentUser");
 								revieverimg = it.getStringExtra("recieverimg");
-
 
 								String id = databaseReference.push().getKey();
 								long t = System.currentTimeMillis();
@@ -163,7 +241,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
 									hm.put("reciever", "group");
 									databaseReference.child("group").child(recieverLocation + "-chat").child(id).setValue(hm);
-//			                Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
 									finish();
 								} else {
 
@@ -171,9 +248,10 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
 									databaseReference.child(currentUser).child(currentUser + "-chat-" + recieverLocation).child(id).setValue(hm);
 									databaseReference.child(recieverLocation).child(recieverLocation + "-chat-" + currentUser).child(id).setValue(hm);
+									progressBar.setVisibility(View.GONE);
 
 									Log.d(getClass().getSimpleName(), "location");
-									Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
+//									Toast.makeText(LocationActivity.this, "Location send Successful", Toast.LENGTH_LONG).show();
 									Intent intent = new Intent(LocationActivity.this, LocationTrack.class);
 									intent.putExtra("reciever", recieverLocation);
 									intent.putExtra("sender", currentUser);
@@ -183,7 +261,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 								}
 							}
 						});
-
 					}
 				}).addOnFailureListener(new OnFailureListener() {
 					@Override
@@ -191,7 +268,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
 					}
 				});
-//				Toast.makeText(LocationActivity.this, "bitmap" + bitmap, Toast.LENGTH_SHORT).show();
 				Log.d(getClass().getSimpleName(), "showBitmap" + bitmap);
 			}
 		};
@@ -216,6 +292,7 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 		lon = location.getLongitude();
 		marker.setPosition(new LatLng(lat, lon));
 		googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 16f));
+
 	}
 
 	@Override

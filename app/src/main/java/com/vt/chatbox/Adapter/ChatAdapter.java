@@ -128,7 +128,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatHolder> {
 			//holder.showReciever.setText(chatData.get(position).getSender());
 			holder.senderlayout.setVisibility(View.VISIBLE);
 			holder.sender.setVisibility(View.GONE);
-			holder.senderTime.setVisibility(View.VISIBLE);
+			holder.senderTime.setVisibility(View.GONE);
 
 			holder.locationView1.setOnClickListener(new View.OnClickListener() {
 				@Override
