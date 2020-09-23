@@ -139,16 +139,30 @@ public class MainActivity extends AppCompatActivity {
 
 									}
 								});
-							} else {
-								Toast.makeText(MainActivity.this, "Error : " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+							}
+							else {
+								Toast.makeText ( MainActivity.this ,
+								                 "Error : " + task.getException ( ).getMessage ( ) , Toast.LENGTH_SHORT ).show ( );
 //                                progressBar.setVisibility(View.GONE);
 							}
 						}
-					});
+					} );
 				}
 			}
+			
+		} );
 
-		});
+//		if ( ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission
+//		.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission
+//		(MainActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager
+//		.PERMISSION_GRANTED ) {
+//			ActivityCompat.requestPermissions(MainActivity.this,
+//					new String[]{android.Manifest.permission.RECORD_AUDIO, Manifest.permission
+//					.READ_PHONE_STATE},
+//					1);
+//		}
+		
+		
 	}
 
 	@Override

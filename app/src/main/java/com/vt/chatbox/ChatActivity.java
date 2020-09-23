@@ -1,7 +1,9 @@
 package com.vt.chatbox;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,6 +16,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -240,18 +244,38 @@ public class ChatActivity extends AppCompatActivity {
 						hm.put("reciever", "group");
 						r_db.child("group").child(recievername + "-chat").child(id).setValue(hm);
 					} else {
-						hm.put("reciever", recievername);
-
-						r_db.child(cur_name).child(cur_name + "-chat-" + recievername).child(id).setValue(hm);
-						r_db.child(recievername).child(recievername + "-chat-" + cur_name).child(id).setValue(hm);
+						hm.put ( "reciever" , recievername );
+						
+						r_db.child ( cur_name ).child ( cur_name + "-chat-" + recievername ).child ( id ).setValue ( hm );
+						r_db.child ( recievername ).child ( recievername + "-chat-" + cur_name ).child ( id ).setValue ( hm );
 					}
-					textMessage.setText("");
-					scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+					textMessage.setText ( "" );
+					scrollView.fullScroll ( ScrollView.FOCUS_DOWN );
 				}
 			}
-		});
-
-
+		} );
+		
+		
+		if ( ContextCompat.checkSelfPermission ( ChatActivity.this ,
+		                                         android.Manifest.permission.RECORD_AUDIO ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission ( ChatActivity.this , android.Manifest.permission.READ_PHONE_STATE ) != PackageManager.PERMISSION_GRANTED ) {
+			ActivityCompat.requestPermissions (
+					ChatActivity.this ,
+					new String[] { android.Manifest.permission.RECORD_AUDIO ,
+					               Manifest.permission.READ_PHONE_STATE } ,
+					1
+			                                  );
+		}
+		
+		findViewById ( R.id.video ).setOnClickListener ( new View.OnClickListener ( ) {
+			@Override
+			public
+			void onClick ( View view ) {
+				Intent intent = new Intent ( ChatActivity.this , CallActivity.class );
+				startActivity ( intent );
+				
+			}
+		} );
+		
 	}
 
 	public void show() {

@@ -17,23 +17,6 @@ public class SplashActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_splash);
 		
 		splash = findViewById(R.id.splash);
-
-//		FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
-//
-//		Job myJob = dispatcher.newJobBuilder()
-//				.setService(MyJobService.class)
-//				.setTag("my-unique-tag")
-//				.build();
-//
-//		dispatcher.mustSchedule(myJob);
-//
-//		FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-//			@Override
-//			public void onSuccess( InstanceIdResult instanceIdResult ) {
-//				instanceIdResult.getToken();
-//				Log.d("dgsdggd", "anujkas : " + instanceIdResult.getToken());
-//			}
-//		});
 		
 		splash.animate().alpha(1f).setDuration(3000);
 		
