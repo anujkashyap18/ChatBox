@@ -24,13 +24,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/recieverlayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:background="@drawable/chat_ui_left"
             android:backgroundTint="@color/colorSecondary"
+            android:gravity="center"
+            android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/show_reciever">
 
@@ -38,35 +39,49 @@
                 android:id="@+id/reciever"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_margin="6dp"
                 android:fontFamily="sans-serif"
+                android:gravity="center|top"
                 android:text=""
+                android:textColorHint="@color/colorPrimaryDark"
                 android:textColor="@color/colorPrimaryDark"
-                android:textColorHint="@color/colorPrimaryDark" />
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/location_view1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="6dp"
-                android:visibility="gone">
+                android:layout_margin="8dp"
+                android:background="@drawable/cardview"
+                android:backgroundTint="#949494"
+                android:visibility="gone"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="3dp"
+                app:cardMaxElevation="3dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/reciever_map_view"
                     android:layout_width="200dp"
-                    android:layout_height="150dp"
-                    android:layout_margin="2dp"
+                    android:layout_height="140dp"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/ic_baseline_location_on_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="1.0" />
+            </com.google.android.material.card.MaterialCardView>
 
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/reciever_time"
@@ -78,7 +93,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/recieverlayout" />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/senderlayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -96,31 +111,45 @@
                 android:layout_margin="6dp"
                 android:fontFamily="sans-serif"
                 android:text=""
+                android:textColorHint="@color/colorPrimary"
                 android:textColor="@color/colorPrimary"
-                android:textColorHint="@color/colorPrimary" />
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/location_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="6dp"
-                android:visibility="gone">
+                android:layout_margin="8dp"
+                android:background="@drawable/cardview"
+                android:backgroundTint="#E5387B"
+                android:visibility="gone"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="3dp"
+                app:cardMaxElevation="3dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/map_view"
                     android:layout_width="200dp"
-                    android:layout_margin="2dp"
+                    android:layout_height="140dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_baseline_location_on_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="1:1"
-                    android:layout_height="150dp"
-                    android:src="@drawable/ic_baseline_location_on_24"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/sender_time"

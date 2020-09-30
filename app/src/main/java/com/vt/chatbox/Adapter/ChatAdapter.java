@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.squareup.picasso.Picasso;
 import com.vt.chatbox.Model.ChatData;
 import com.vt.chatbox.R;
@@ -218,8 +218,8 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 
 	static class ChatHolder extends RecyclerView.ViewHolder {
 		TextView sender, senderTime, reciever, recieverTime, showReciever;
-		ConstraintLayout locationView, locationView1;
-		LinearLayout senderlayout, recieverlayout;
+		MaterialCardView locationView, locationView1;
+		ConstraintLayout recieverlayout, senderlayout;
 		ImageView mapView, recieverMap;
 
 		public ChatHolder ( @NonNull View itemView ) {

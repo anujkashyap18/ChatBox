@@ -293,7 +293,7 @@ public class ChatActivity extends AppCompatActivity {
 		dialog = alertDialogBuilder.create ( );
 		dialog.show ( );
 
-		TextView sendImage = view.findViewById ( R.id.send_image );
+		ImageView sendImage = view.findViewById ( R.id.send_image );
 
 		sendImage.setOnClickListener ( new View.OnClickListener ( ) {
 			@Override
