@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:fontFamily="sans-serif"
-                android:text="reciever"
+                android:text=""
                 android:textColor="@color/colorPrimaryDark"
                 android:textColorHint="@color/colorPrimaryDark" />
 
@@ -72,7 +72,7 @@
             android:id="@+id/reciever_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="time"
+            android:hint=""
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="6dp"
                 android:fontFamily="sans-serif"
-                android:text="sender"
+                android:text=""
                 android:textColor="@color/colorPrimary"
                 android:textColorHint="@color/colorPrimary" />
 
@@ -126,7 +126,7 @@
             android:id="@+id/sender_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="time"
+            android:hint=""
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -198,12 +198,6 @@ public class LocationActivity extends FragmentActivity implements OnMapReadyCall
 
 	public void takeScreenShot() {
 
-//		try {
-//			locationTrack = new LocationTrack(dur);
-//		}
-//		catch(Exception e){
-//			e.printStackTrace();
-//		}
 
 		GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
 			@Override

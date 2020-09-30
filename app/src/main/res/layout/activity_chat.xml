@@ -81,14 +81,14 @@
                 /
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ImageView
-                android:id="@+id/video"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:padding="8dp"
-                android:src="@drawable/ic_baseline_call_24"
-                app:layout_constraintEnd_toStartOf="@+id/location" />
+            <!--            <ImageView-->
+            <!--                android:id="@+id/video"-->
+            <!--                style="@style/Widget.AppCompat.Button.Borderless"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                android:padding="8dp"-->
+            <!--                android:src="@drawable/ic_baseline_call_24"-->
+            <!--                app:layout_constraintEnd_toStartOf="@+id/location" />-->
 
             <ImageView
                 android:id="@+id/location"
@@ -155,7 +155,7 @@
                     android:backgroundTint="#e3e3e3"
                     android:orientation="horizontal"
                     android:padding="4dp"
-                    android:weightSum="1"
+                    android:weightSum="2"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
@@ -165,16 +165,24 @@
                         android:id="@+id/type_message"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.85"
+                        android:layout_weight="1.5"
                         android:background="@drawable/cardview"
                         android:hint="Type a message" />
+
+                    <ImageView
+                        android:id="@+id/attach"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.25"
+                        android:src="@drawable/ic_baseline_attach_file_24" />
 
                     <ImageView
                         android:id="@+id/send"
                         style="@style/Widget.AppCompat.Button.Borderless"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.15"
+                        android:layout_weight="0.25"
                         android:src="@drawable/ic_baseline_send_24" />
 
                 </LinearLayout>
