@@ -1,10 +1,5 @@
 package com.vt.chatbox;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -18,6 +13,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -115,8 +115,10 @@ public class ProfileActivity extends AppCompatActivity {
 		imageView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick( View view ) {
-				Intent intent1 = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-				startActivityForResult(intent1, 1000);
+				Intent pickIntent = new Intent ( );
+				pickIntent.setAction ( Intent.ACTION_GET_CONTENT );
+				pickIntent.setDataAndType ( MediaStore.Images.Media.EXTERNAL_CONTENT_URI , "image/*" );
+				startActivityForResult ( pickIntent , 1200 );
 			}
 		});
 		

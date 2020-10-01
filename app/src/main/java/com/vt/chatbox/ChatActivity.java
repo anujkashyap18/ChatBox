@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -15,9 +16,9 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -93,6 +94,8 @@ public class ChatActivity extends AppCompatActivity {
 	AlertDialog.Builder alertDialogBuilder;
 	AlertDialog dialog;
 	LayoutInflater inflater;
+	ProgressBar progressBar;
+
 
 	@Override
 	protected void onCreate ( Bundle savedInstanceState ) {
@@ -108,6 +111,7 @@ public class ChatActivity extends AppCompatActivity {
 		view = findViewById ( R.id.profileClick );
 		attach = findViewById ( R.id.attach );
 		groupRecyclerView = findViewById ( R.id.group_chat_recyclerview );
+		progressBar = findViewById ( R.id.progress );
 
 		Intent it = getIntent ( );
 		recievername = it.getStringExtra ( "name" );
@@ -133,7 +137,6 @@ public class ChatActivity extends AppCompatActivity {
 //				Toast.makeText(ChatActivity.this, "groups"+recievername, Toast.LENGTH_SHORT).show();
 				intent.putExtra ( "currentUser" , cur_name );
 				intent.putExtra ( "recieverimg" , revieverimg );
-
 				startActivity ( intent );
 
 			}
@@ -293,19 +296,34 @@ public class ChatActivity extends AppCompatActivity {
 		dialog = alertDialogBuilder.create ( );
 		dialog.show ( );
 
+		ProgressBar progressBar1 = view.findViewById ( R.id.progress );
 		ImageView sendImage = view.findViewById ( R.id.send_image );
+//		ImageView sendVideo = view.findViewById ( R.id.send_video );
 
 		sendImage.setOnClickListener ( new View.OnClickListener ( ) {
 			@Override
 			public void onClick ( View v ) {
 				Intent pickIntent = new Intent ( );
 				pickIntent.setAction ( Intent.ACTION_GET_CONTENT );
-				pickIntent.setDataAndType ( android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI , "image/* video/*" );
+				pickIntent.setDataAndType ( MediaStore.Images.Media.EXTERNAL_CONTENT_URI , "image/* video/*" );
 				startActivityForResult ( pickIntent , IMAGE_PICKER_SELECT );
 			}
 		} );
+		progressBar1.setVisibility ( View.GONE );
+
+//		sendVideo.setOnClickListener ( new View.OnClickListener ( ) {
+//			@Override
+//			public void onClick ( View v ) {
+//				Intent intent = new Intent();
+//				intent.setAction ( Intent.ACTION_GET_CONTENT );
+//				intent.setDataAndType ( android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI , "video/*");
+//				startActivityForResult(intent, 2);
+//			}
+//		} );
 	}
 
+
+	//for image uploading
 	@Override
 	protected void onActivityResult ( int requestCode , int resultCode , @Nullable Intent data ) {
 		super.onActivityResult ( requestCode , resultCode , data );
@@ -319,7 +337,13 @@ public class ChatActivity extends AppCompatActivity {
 			upload ( selectedMediaUri , getMimeType ( selectedMediaUri ) );
 
 		}
+
+		else {
+			dialog.dismiss ( );
+			Uri videoUri = data.getData ( );
+		}
 	}
+
 
 	public String getMimeType ( Uri uri ) {
 		String mimeType = null;
@@ -347,7 +371,7 @@ public class ChatActivity extends AppCompatActivity {
 					@Override
 					public void onSuccess ( Uri uri ) {
 						String url = String.valueOf ( uri );
-						Toast.makeText ( ChatActivity.this , "Image Uploaded" , Toast.LENGTH_SHORT ).show ( );
+//						Toast.makeText ( ChatActivity.this , "Image Uploaded" , Toast.LENGTH_SHORT ).show ( );
 						Log.d ( getClass ( ).getSimpleName ( ) , "UPLOADED URL : " + url );
 
 						String id = r_db.push ( ).getKey ( );
@@ -362,6 +386,7 @@ public class ChatActivity extends AppCompatActivity {
 
 						r_db.child ( cur_name ).child ( cur_name + "-chat-" + recievername ).child ( id ).setValue ( hm );
 						r_db.child ( recievername ).child ( recievername + "-chat-" + cur_name ).child ( id ).setValue ( hm );
+						progressBar.setVisibility ( View.GONE );
 
 					}
 				} );
@@ -372,6 +397,7 @@ public class ChatActivity extends AppCompatActivity {
 
 			}
 		} );
+
 
 	}
 
@@ -419,6 +445,7 @@ public class ChatActivity extends AppCompatActivity {
 				volleyFcm ( recievername , message );
 				chatAdapter = new ChatAdapter ( ChatActivity.this , chat_data , cur_name );
 				chatRecyclerView.setAdapter ( chatAdapter );
+				progressBar.setVisibility ( View.GONE );
 
 				Runnable runnable = new Runnable ( ) {
 					@Override

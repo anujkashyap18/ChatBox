@@ -5,22 +5,27 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.squareup.picasso.Picasso;
 import com.vt.chatbox.Model.ChatData;
 import com.vt.chatbox.R;
@@ -51,7 +56,7 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 	}
 
 	@Override
-	public void onBindViewHolder ( @NonNull ChatHolder holder , int position ) {
+	public void onBindViewHolder ( @NonNull final ChatHolder holder , final int position ) {
 
 		@SuppressLint ( "SimpleDateFormat" )
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat ( "hh:mm a" );
@@ -68,6 +73,7 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 				holder.locationView.setVisibility ( View.VISIBLE );
 				holder.reciever.setText ( chatData.get ( position ).getReciever ( ) );
 				holder.reciever.setVisibility ( View.GONE );
+//				holder.progressBar.setVisibility ( View.GONE );
 				holder.senderTime.setText ( currenttime );
 				String[] split = chatData.get ( position ).getMessage ( ).split ( ":" );
 				String mapImg = chatData.get ( position ).getImage ( );
@@ -103,6 +109,7 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 				holder.recieverlayout.setVisibility ( View.GONE );
 				holder.mapView.setVisibility ( View.VISIBLE );
 				holder.senderTime.setText ( currenttime );
+//				holder.progressBar.setVisibility ( View.GONE );
 
 				if ( chatData.get ( position ).getMessage ( ).equals ( "image/jpg" ) || chatData.get ( position ).getMessage ( ).equals ( "image/jpeg" ) || chatData.get ( position ).getMessage ( ).equals ( "image/png" ) ) {
 					Picasso.get ( ).load ( chatData.get ( position ).getImage ( ) ).error ( R.drawable.ic_baseline_call_24 ).into ( holder.mapView );
@@ -113,8 +120,64 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 					String videoFile = chatData.get ( position ).getImage ( );
 					Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail ( videoFile , MediaStore.Images.Thumbnails.MINI_KIND );
 					holder.mapView.setImageBitmap ( thumbnail );
+					holder.mapView.setVisibility ( View.GONE );
+					holder.videoView.setVisibility ( View.VISIBLE );
+//					holder.progressBar.setVisibility ( View.GONE );
+					final Uri uri = Uri.parse ( String.valueOf ( chatData.get ( position ).getImage ( ) ) );
+					holder.videoView.setVideoURI ( uri );
+					holder.videoView.stopPlayback ( );
+					holder.videoView.stopPlayback ( );
+//
+					Log.d ( getClass ( ).getSimpleName ( ) , "VIDEO SELECTED : " + uri );
+
+					holder.videoView.setOnClickListener ( new View.OnClickListener ( ) {
+						@Override
+						public void onClick ( View v ) {
+
+							MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder ( new ContextThemeWrapper ( context , R.style.AlertDialogCustom ) );
+							LayoutInflater inflater = LayoutInflater.from ( context );
+							final View view = inflater.inflate ( R.layout.custom_profile_alert_layout , null );
+							final VideoView videoView1 = view.findViewById ( R.id.openVideo );
+							final ImageView imageView = view.findViewById ( R.id.circleImageView );
+							alertDialogBuilder.setView ( view );
+							AlertDialog dialog = alertDialogBuilder.create ( );
+							dialog.show ( );
+							holder.mapView.setVisibility ( View.GONE );
+
+							Uri uris = Uri.parse ( String.valueOf ( chatData.get ( position ).getImage ( ) ) );
+							videoView1.setVideoURI ( uris );
+							videoView1.start ( );
+							videoView1.setOnCompletionListener ( new MediaPlayer.OnCompletionListener ( ) {
+								@Override
+								public void onCompletion ( MediaPlayer mediaPlayer ) {
+									videoView1.start ( );
+								}
+							} );
+							imageView.setVisibility ( View.GONE );
+
+
+						}
+					} );
+
 				}
+
+				holder.mapView.setOnClickListener ( new View.OnClickListener ( ) {
+					@Override
+					public void onClick ( View v ) {
+
+//						MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder ( context );
+						MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder ( new ContextThemeWrapper ( context , R.style.AlertDialogCustom ) );
+						LayoutInflater inflater = LayoutInflater.from ( context );
+						final View view = inflater.inflate ( R.layout.custom_profile_alert_layout , null );
+						alertDialogBuilder.setView ( view );
+						AlertDialog dialog = alertDialogBuilder.create ( );
+						dialog.show ( );
+						ImageView showImage = view.findViewById ( R.id.circleImageView );
+						Picasso.get ( ).load ( chatData.get ( position ).getImage ( ) ).into ( showImage );
+					}
+				} );
 			}
+
 			else {
 				holder.sender.setText ( chatData.get ( position ).getMessage ( ) );
 				holder.senderTime.setText ( currenttime );
@@ -122,6 +185,7 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 				holder.recieverTime.setVisibility ( View.GONE );
 				holder.recieverlayout.setVisibility ( View.GONE );
 				holder.locationView.setVisibility ( View.GONE );
+//				holder.progressBar.setVisibility ( View.GONE );
 			}
 
 		}
@@ -134,12 +198,12 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 			holder.senderlayout.setVisibility ( View.GONE );
 			holder.senderTime.setVisibility ( View.GONE );
 			holder.locationView.setVisibility ( View.GONE );
+//			holder.progressBar.setVisibility ( View.GONE );
 		}
 
 		else {
 
 			if ( type.equals ( "userLocation" ) ) {
-
 
 				String[] split = chatData.get ( position ).getMessage ( ).split ( ":" );
 				String mapImgs = chatData.get ( position ).getImage ( );
@@ -187,6 +251,7 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 				holder.recieverlayout.setVisibility ( View.VISIBLE );
 				holder.recieverMap.setVisibility ( View.VISIBLE );
 				holder.recieverTime.setText ( currenttime );
+//				holder.progressBar.setVisibility ( View.GONE );
 
 				if ( chatData.get ( position ).getMessage ( ).equals ( "image/jpg" ) || chatData.get ( position ).getMessage ( ).equals ( "image/jpeg" ) || chatData.get ( position ).getMessage ( ).equals ( "image/png" ) ) {
 					Picasso.get ( ).load ( chatData.get ( position ).getImage ( ) ).error ( R.drawable.ic_baseline_call_24 ).into ( holder.recieverMap );
@@ -197,8 +262,38 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 					String videoFile = chatData.get ( position ).getImage ( );
 					Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail ( videoFile , MediaStore.Images.Thumbnails.MINI_KIND );
 					holder.mapView.setImageBitmap ( thumbnail );
+
+					holder.recieverMap.setVisibility ( View.GONE );
+					holder.videoView1.setVisibility ( View.VISIBLE );
+//					holder.progressBar.setVisibility ( View.GONE );
+					Uri uri = Uri.parse ( String.valueOf ( chatData.get ( position ).getImage ( ) ) );
+					holder.videoView1.setVideoURI ( uri );
+//					holder.videoView1.start ( );
+//					holder.videoView1.setOnCompletionListener ( new MediaPlayer.OnCompletionListener ( ) {
+//						@Override
+//						public void onCompletion ( MediaPlayer mediaPlayer ) {
+//							holder.videoView1.start ( );
+//						}
+//					} );
 				}
+
+				holder.recieverMap.setOnClickListener ( new View.OnClickListener ( ) {
+					@Override
+					public void onClick ( View v ) {
+
+//						MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder ( context );
+						MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder ( new ContextThemeWrapper ( context , R.style.AlertDialogCustom ) );
+						LayoutInflater inflater = LayoutInflater.from ( context );
+						final View view = inflater.inflate ( R.layout.custom_profile_alert_layout , null );
+						alertDialogBuilder.setView ( view );
+						AlertDialog dialog = alertDialogBuilder.create ( );
+						dialog.show ( );
+						ImageView showImage = view.findViewById ( R.id.circleImageView );
+						Picasso.get ( ).load ( chatData.get ( position ).getImage ( ) ).into ( showImage );
+					}
+				} );
 			}
+
 			else {
 				holder.reciever.setText ( chatData.get ( position ).getMessage ( ) );
 				holder.showReciever.setVisibility ( View.VISIBLE );
@@ -207,6 +302,7 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 				holder.recieverlayout.setVisibility ( View.VISIBLE );
 				holder.locationView1.setVisibility ( View.GONE );
 				holder.senderlayout.setVisibility ( View.GONE );
+//				holder.progressBar.setVisibility ( View.GONE );
 			}
 		}
 	}
@@ -221,6 +317,8 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 		MaterialCardView locationView, locationView1;
 		ConstraintLayout recieverlayout, senderlayout;
 		ImageView mapView, recieverMap;
+		VideoView videoView, videoView1;
+
 
 		public ChatHolder ( @NonNull View itemView ) {
 			super ( itemView );
@@ -235,6 +333,9 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 			locationView1 = itemView.findViewById ( R.id.location_view1 );
 			mapView = itemView.findViewById ( R.id.map_view );
 			recieverMap = itemView.findViewById ( R.id.reciever_map_view );
+			videoView = itemView.findViewById ( R.id.video_view );
+			videoView1 = itemView.findViewById ( R.id.reciever_video_view );
+//			progressBar = itemView.findViewById(R.id.progress);
 		}
 	}
 }

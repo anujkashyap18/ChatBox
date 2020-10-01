@@ -34,6 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+
 public class MainActivity extends AppCompatActivity {
 	private static final int RC_CAMERA_AND_LOCATION = 1;
 	TextInputEditText editTextPassword;
@@ -161,28 +162,29 @@ public class MainActivity extends AppCompatActivity {
 //					.READ_PHONE_STATE},
 //					1);
 //		}
-		
-		
+
+
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+	public void onRequestPermissionsResult ( int requestCode , String[] permissions , int[] grantResults ) {
+		super.onRequestPermissionsResult ( requestCode , permissions , grantResults );
 
 		// Forward results to EasyPermissions
-		EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+		EasyPermissions.onRequestPermissionsResult ( requestCode , permissions , grantResults , this );
 	}
 
-	@AfterPermissionGranted(RC_CAMERA_AND_LOCATION)
-	private void methodRequiresTwoPermission() {
-		String[] perms = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION};
-		if (EasyPermissions.hasPermissions(this, perm_params)) {
+	@AfterPermissionGranted ( RC_CAMERA_AND_LOCATION )
+	private void methodRequiresTwoPermission ( ) {
+		String[] perms = { Manifest.permission.CAMERA , Manifest.permission.ACCESS_FINE_LOCATION };
+		if ( EasyPermissions.hasPermissions ( this , perm_params ) ) {
 			// Already have permission, do the thing
 			// ...
-		} else {
+		}
+		else {
 			// Do not have permissions, request them now
-			EasyPermissions.requestPermissions(this, getString(R.string.app_name),
-					RC_CAMERA_AND_LOCATION, perms);
+			EasyPermissions.requestPermissions ( this , getString ( R.string.app_name ) ,
+					RC_CAMERA_AND_LOCATION , perms );
 		}
 	}
 }
