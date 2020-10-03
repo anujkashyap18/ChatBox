@@ -311,15 +311,6 @@ public class ChatActivity extends AppCompatActivity {
 		} );
 		progressBar1.setVisibility ( View.GONE );
 
-//		sendVideo.setOnClickListener ( new View.OnClickListener ( ) {
-//			@Override
-//			public void onClick ( View v ) {
-//				Intent intent = new Intent();
-//				intent.setAction ( Intent.ACTION_GET_CONTENT );
-//				intent.setDataAndType ( android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI , "video/*");
-//				startActivityForResult(intent, 2);
-//			}
-//		} );
 	}
 
 
