@@ -28,6 +28,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.squareup.picasso.Picasso;
 import com.vt.chatbox.Model.ChatData;
+import com.vt.chatbox.Model.MyTouch;
 import com.vt.chatbox.R;
 
 import java.text.SimpleDateFormat;
@@ -125,8 +126,6 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 //					holder.progressBar.setVisibility ( View.GONE );
 					final Uri uri = Uri.parse ( String.valueOf ( chatData.get ( position ).getImage ( ) ) );
 					holder.videoView.setVideoURI ( uri );
-					holder.videoView.stopPlayback ( );
-					holder.videoView.stopPlayback ( );
 //
 					Log.d ( getClass ( ).getSimpleName ( ) , "VIDEO SELECTED : " + uri );
 
@@ -139,23 +138,42 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 							final View view = inflater.inflate ( R.layout.custom_profile_alert_layout , null );
 							final VideoView videoView1 = view.findViewById ( R.id.openVideo );
 							final ImageView imageView = view.findViewById ( R.id.circleImageView );
+							final ImageView play = view.findViewById ( R.id.play );
 							alertDialogBuilder.setView ( view );
 							AlertDialog dialog = alertDialogBuilder.create ( );
 							dialog.show ( );
 							holder.mapView.setVisibility ( View.GONE );
-
 							Uri uris = Uri.parse ( String.valueOf ( chatData.get ( position ).getImage ( ) ) );
 							videoView1.setVideoURI ( uris );
-							videoView1.start ( );
+//								videoView1.pause ( );
 							videoView1.setOnCompletionListener ( new MediaPlayer.OnCompletionListener ( ) {
 								@Override
 								public void onCompletion ( MediaPlayer mediaPlayer ) {
-									videoView1.start ( );
+									videoView1.pause ( );
 								}
 							} );
+
+							play.setOnClickListener ( new View.OnClickListener ( ) {
+								@Override
+								public void onClick ( View v ) {
+									if ( videoView1.isShown ( ) ) {
+										videoView1.start ( );
+										play.setVisibility ( View.GONE );
+									}
+								}
+							} );
+
+							videoView1.setOnClickListener ( new View.OnClickListener ( ) {
+								@Override
+								public void onClick ( View v ) {
+									if ( videoView1.isShown ( ) ) {
+										videoView1.pause ( );
+										play.setVisibility ( View.VISIBLE );
+									}
+								}
+							} );
+
 							imageView.setVisibility ( View.GONE );
-
-
 						}
 					} );
 
@@ -173,7 +191,11 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 						AlertDialog dialog = alertDialogBuilder.create ( );
 						dialog.show ( );
 						ImageView showImage = view.findViewById ( R.id.circleImageView );
+						ImageView play = view.findViewById ( R.id.play );
 						Picasso.get ( ).load ( chatData.get ( position ).getImage ( ) ).into ( showImage );
+						showImage.setOnTouchListener ( new MyTouch ( context ) );
+						play.setVisibility ( View.GONE );
+
 					}
 				} );
 			}
@@ -268,13 +290,54 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 //					holder.progressBar.setVisibility ( View.GONE );
 					Uri uri = Uri.parse ( String.valueOf ( chatData.get ( position ).getImage ( ) ) );
 					holder.videoView1.setVideoURI ( uri );
-//					holder.videoView1.start ( );
-//					holder.videoView1.setOnCompletionListener ( new MediaPlayer.OnCompletionListener ( ) {
-//						@Override
-//						public void onCompletion ( MediaPlayer mediaPlayer ) {
-//							holder.videoView1.start ( );
-//						}
-//					} );
+
+					holder.videoView1.setOnClickListener ( new View.OnClickListener ( ) {
+						@Override
+						public void onClick ( View v ) {
+							MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder ( new ContextThemeWrapper ( context , R.style.AlertDialogCustom ) );
+							LayoutInflater inflater = LayoutInflater.from ( context );
+							final View view = inflater.inflate ( R.layout.custom_profile_alert_layout , null );
+							alertDialogBuilder.setView ( view );
+							AlertDialog dialog = alertDialogBuilder.create ( );
+							dialog.show ( );
+							ImageView imageView = view.findViewById ( R.id.circleImageView );
+							final ImageView play = view.findViewById ( R.id.play );
+							final VideoView videoView1 = view.findViewById ( R.id.openVideo );
+
+							holder.mapView.setVisibility ( View.GONE );
+							Uri uris = Uri.parse ( String.valueOf ( chatData.get ( position ).getImage ( ) ) );
+							videoView1.setVideoURI ( uris );
+//								videoView1.pause ( );
+							videoView1.setOnCompletionListener ( new MediaPlayer.OnCompletionListener ( ) {
+								@Override
+								public void onCompletion ( MediaPlayer mediaPlayer ) {
+									videoView1.pause ( );
+								}
+							} );
+
+							play.setOnClickListener ( new View.OnClickListener ( ) {
+								@Override
+								public void onClick ( View v ) {
+									if ( videoView1.isShown ( ) ) {
+										videoView1.start ( );
+										play.setVisibility ( View.GONE );
+									}
+								}
+							} );
+
+							videoView1.setOnClickListener ( new View.OnClickListener ( ) {
+								@Override
+								public void onClick ( View v ) {
+									if ( videoView1.isShown ( ) ) {
+										videoView1.pause ( );
+										play.setVisibility ( View.VISIBLE );
+									}
+								}
+							} );
+
+							imageView.setVisibility ( View.GONE );
+						}
+					} );
 				}
 
 				holder.recieverMap.setOnClickListener ( new View.OnClickListener ( ) {
@@ -289,7 +352,9 @@ public class ChatAdapter extends RecyclerView.Adapter < ChatAdapter.ChatHolder >
 						AlertDialog dialog = alertDialogBuilder.create ( );
 						dialog.show ( );
 						ImageView showImage = view.findViewById ( R.id.circleImageView );
+						ImageView play = view.findViewById ( R.id.play );
 						Picasso.get ( ).load ( chatData.get ( position ).getImage ( ) ).into ( showImage );
+						play.setVisibility ( View.GONE );
 					}
 				} );
 			}

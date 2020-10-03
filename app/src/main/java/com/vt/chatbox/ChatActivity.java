@@ -344,7 +344,6 @@ public class ChatActivity extends AppCompatActivity {
 		}
 	}
 
-
 	public String getMimeType ( Uri uri ) {
 		String mimeType = null;
 		if ( uri.getScheme ( ).equals ( ContentResolver.SCHEME_CONTENT ) ) {
